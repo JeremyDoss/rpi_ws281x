@@ -45,10 +45,6 @@ def rainbowCycle(strip, wait_ms=1, iterations=5):
 		strip.show()
 		time.sleep(wait_ms/100000.0)
 
-def renderCylonEye(strip, position, spread):
-	ledCount = strip.numPixels()
-
-
 def cylonSweep(strip, cycle_ms=1, iterations=10, spread=2):
 	ledCount = strip.numPixels()
 	for k in range(iterations):
@@ -76,6 +72,13 @@ def cylonSweep(strip, cycle_ms=1, iterations=10, spread=2):
 						strip.setPixelColor(j, Color(int(level), 0, 0))
 					else:
 						strip.setPixelColor(j, Color(0, 0, 0))
+
+				if (loffset < float(ledCount)/4):
+					slow = 1
+					slowFactor = slowFactor * ((float(ledCount)/4) - loffset)
+				elif (roffset < float(ledCount)/4):
+					s6low = 1
+					slowFactor = slowFactor * ((float(ledCount)/4) - roffset)
 			# Sweep right => left
 			else:
 				eyePosition = 2 * ledCount - (i + 1)
@@ -96,8 +99,20 @@ def cylonSweep(strip, cycle_ms=1, iterations=10, spread=2):
 						strip.setPixelColor(j, Color(int(level), 0, 0))
 					else:
 						strip.setPixelColor(j, Color(0, 0, 0))
+
+				if (loffset <= float(ledCount)/4):
+					slow = 1
+					slowFactor = slowFactor * ((float(ledCount)/4) - loffset)
+				elif (roffset <= float(ledCount)/4):
+					slow = 1
+					slowFactor = slowFactor * ((float(ledCount)/4) - roffset)
 			strip.show()
 			time.sleep(cycle_ms/10000.0)
+
+			if (slow):
+				time.sleep(slowFactor/20000.0)
+				slow = 0
+				slowFactor = cycle_ms
 
 # Main program logic follows:
 if __name__ == '__main__':
