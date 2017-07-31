@@ -27,6 +27,9 @@
  *
  */
 
+/*
+* CHANGES - Added simple C threading into main function to allow better tear-down of process
+*/
 
 #include <stdint.h>
 #include <pthread.h>
