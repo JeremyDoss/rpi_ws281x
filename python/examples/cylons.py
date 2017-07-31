@@ -45,6 +45,23 @@ def rainbowCycle(strip, wait_ms=1, iterations=5):
 		strip.show()
 		time.sleep(wait_ms/100000.0)
 
+def renderCylonEye(strip, position, spread):
+	ledCount = strip.numPixels()
+	for j in range(ledCount):
+		offset = abs(position - j)
+		if offset == 0:
+			strip.setPixelColor(j, Color(255, 0, 0))
+		elif offset <= spread:
+			# NOTE: Percieved brightness for LEDs on a scale from 0-255 is NOT LINEAR.
+			# The LEDs get brighter at an exponential rate!
+			# The math below steps up brightness in powers of 2 but each jump becomes more obvious with larger strips
+			scalar = 8 / float(spread)
+			power = math.floor(scalar * (spread - offset))
+			level = 1 << int(power)
+			strip.setPixelColor(j, Color(int(level), 0, 0))
+		else:
+			strip.setPixelColor(j, Color(0, 0, 0))
+
 def cylonSweep(strip, cycle_ms=1, iterations=10, spread=2):
 	ledCount = strip.numPixels()
 	for k in range(iterations):
@@ -57,22 +74,7 @@ def cylonSweep(strip, cycle_ms=1, iterations=10, spread=2):
 				eyePosition = i
 				loffset = eyePosition
 				roffset = (ledCount - 1) - eyePosition
-				
-				for j in range(ledCount):
-					offset = abs(position - j)
-					if offset == 0:
-						strip.setPixelColor(j, Color(255, 0, 0))
-					elif offset <= spread:
-						# NOTE: Percieved brightness for LEDs on a scale from 0-255 is NOT LINEAR.
-						# The LEDs get brighter at an exponential rate!
-						# The math below steps up brightness in powers of 2 but each jump becomes more obvious with larger strips
-						scalar = 8 / float(spread)
-						power = math.floor(scalar * (spread - offset))
-						level = 1 << int(power)
-						strip.setPixelColor(j, Color(int(level), 0, 0))
-					else:
-						strip.setPixelColor(j, Color(0, 0, 0))
-
+				renderCylonEye(strip, eyePosition, spread)
 				if (loffset < float(ledCount)/4):
 					slow = 1
 					slowFactor = slowFactor * ((float(ledCount)/4) - loffset)
@@ -84,22 +86,7 @@ def cylonSweep(strip, cycle_ms=1, iterations=10, spread=2):
 				eyePosition = 2 * ledCount - (i + 1)
 				loffset = eyePosition
 				roffset = (ledCount - 1) - eyePosition
-				
-				for j in range(ledCount):
-					offset = abs(position - j)
-					if offset == 0:
-						strip.setPixelColor(j, Color(255, 0, 0))
-					elif offset <= spread:
-						# NOTE: Percieved brightness for LEDs on a scale from 0-255 is NOT LINEAR.
-						# The LEDs get brighter at an exponential rate!
-						# The math below steps up brightness in powers of 2 but each jump becomes more obvious with larger strips
-						scalar = 8 / float(spread)
-						power = math.floor(scalar * (spread - offset))
-						level = 1 << int(power)
-						strip.setPixelColor(j, Color(int(level), 0, 0))
-					else:
-						strip.setPixelColor(j, Color(0, 0, 0))
-
+				renderCylonEye(strip, eyePosition, spread)
 				if (loffset <= float(ledCount)/4):
 					slow = 1
 					slowFactor = slowFactor * ((float(ledCount)/4) - loffset)
