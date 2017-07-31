@@ -29,6 +29,7 @@
 
 
 #include <stdint.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,10 +54,9 @@
 #define GPIO_PIN                                 18
 #define DMA                                      5
 
-#define WIDTH                                    3
-#define HEIGHT                                   3
+#define WIDTH                                    144
+#define HEIGHT                                   1
 #define LED_COUNT                                (WIDTH * HEIGHT)
-
 
 ws2811_t ledstring =
 {
@@ -150,6 +150,38 @@ static void setup_handlers(void)
     sigaction(SIGKILL, &sa, NULL);
 }
 
+void *runtimeLoop() {
+    printf("LEDs running as a thread...\n");
+    printf("Press any key to exit.\n");
+
+    while (1)
+    {
+        printf(".");
+
+        matrix_raise();
+        matrix_bottom();
+        if (0)
+        {
+            printf("inside mem if()");
+            void *p = malloc(64000000);
+            memset(p, 42, 64000000);
+            free(p);
+        }
+        matrix_render();
+
+        if (ws2811_render(&ledstring))
+        {
+            break;
+        }
+
+        // 15 frames /sec
+        usleep(500000);
+    }
+    
+    printf("Exiting thread...");
+    pthread_exit(NULL);
+}
+
 int main(int argc, char *argv[])
 {
     int ret = 0;
@@ -172,30 +204,20 @@ int main(int argc, char *argv[])
         free(p);
     }
 
-    while (1)
+    pthread_t threads[1];
+    int rc;
+    rc = pthread_create(&threads[1], NULL, runtimeLoop, NULL);
+
+    if (rc)
     {
-        matrix_raise();
-        matrix_bottom();
-        if (0)
-        {
-            void *p = malloc(64000000);
-            memset(p, 42, 64000000);
-            free(p);
-        }
-        matrix_render();
-
-        if (ws2811_render(&ledstring))
-        {
-            ret = -1;
-            break;
-        }
-
-        // 15 frames /sec
-        usleep(500000);
+        printf("ERROR; return code from pthread_create() is %d\n", rc);
+        return -1;
     }
 
+    getchar();
+
     ws2811_fini(&ledstring);
+    pthread_exit(NULL);
 
     return ret;
 }
-
