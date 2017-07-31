@@ -1,73 +1,29 @@
-rpi_ws281x
-==========
+# RaspberryPi2 B+ Animations Library
 
-Userspace Raspberry Pi PWM library for WS281X LEDs
+A library of animations created using the neopixel library forked from <a href="https://github.com/richardghirst/rpi_ws281x">here.</a>
 
-Background:
+## Background
 
-The BCM2835 in the Raspberry Pi has a PWM module that is well suited to
-driving individually controllable WS281X LEDs.  Using the DMA, PWM FIFO,
-and serial mode in the PWM, it's possible to control almost any number
-of WS281X LEDs in a chain connected to the PWM output pin.
-
-This library and test program set the clock rate of the PWM controller to
-3X the desired output frequency and creates a bit pattern in RAM from an
-array of colors where each bit is represented by 3 bits for the PWM
-controller as follows.
-
-    Bit 1 - 1 1 0
-    Bit 0 - 1 0 0
+I wanted to create a library of custom animations to run on my raspberry pi 2 B+.
+The idea was to mount the Pi in my car along with the LEDs so that I could get 
+some cool animations running under the hood scoop on my Subaru WRX. I figured it 
+would be cooler than just throwing underglow on it. In the end I would like to hook 
+it up to be bluetooth controlled from the vehicle. It should start automatically 
+with ignition power.
 
 
-Hardware:
+## Hardware
 
-WS281X LEDs are generally driven at 5V, which requires that the data
-signal be at the same level.  Converting the output from a Raspberry
-Pi GPIO/PWM to a higher voltage through a level shifter is required.
+This build is currently tested and working on a strip containing 144 WS2812b LEDs per meter.
+It should work for all type WS281X LEDs. These strips run off of 5v power and can be considered 
+to draw a MAXIMUM of 60ma per pixel. I had no trouble running 144 using a 5v 2a phone charger at 
+reduced brightness.
 
-It is possible to run the LEDs from a 3.3V - 3.6V power source, and
-connect the GPIO directly at a cost of brightness, but this isn't
-recommended.
+## Building
 
-The test program is designed to drive a 8x8 grid of LEDs from Adafruit
-(http://www.adafruit.com/products/1487).  Please see the Adafruit
-website for more information.
-
-Know what you're doing with the hardware and electricity.  I take no
-reponsibility for damage, harm, or mistakes.
-
-
-Build:
-
-- Install Scons (on raspbian, apt-get install scons).
-- Make sure to adjust the parameters in main.c to suit your hardare.
-  - Signal rate (400kHz to 800kHz).  Default 800kHz.
-  - ledstring.invert=1 if using a inverting level shifter.
-  - Width and height of LED matrix (height=1 for LED string).
-- Type 'scons' from inside the source directory.
-
-
-Running:
-
-- Type 'sudo scons'.
-- Type 'sudo ./test'.
-- That's it.  You should see a moving rainbow scroll across the
-  display.
-
-
-Usage:
-
-The API is very simple.  Make sure to create and initialize the ws2811_t
-structure as seen in main.c.  From there it can be initialized
-by calling ws2811_init().  LEDs are changed by modifying the color in
-the .led[index] array and calling ws2811_render().  The rest is handled
-by the library, which creates the DMA memory and starts the DMA/PWM.
-
-Make sure to hook a signal handler for SIGKILL to do cleanup.  From the
-handler make sure to call ws2811_fini().  It'll make sure that the DMA
-is finished before program execution stops.
-
-That's it.  Have fun.  This was a fun little weekend project.  I hope
-you find it useful.  I plan to add some diagrams, waveform scope shots,
-and a .deb package soon.
-
+* Install Scons (on raspbian, apt-get install scons).
+* Make sure to adjust the parameters in main.c to suit your hardare.
+  * Signal rate (400kHz to 800kHz).  Default 800kHz.
+  * ledstring.invert=1 if using a inverting level shifter.
+  * Width and height of LED matrix (height=1 for LED string).
+* Type 'scons' from inside the src directory.
