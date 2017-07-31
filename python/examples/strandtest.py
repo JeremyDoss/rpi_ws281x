@@ -7,15 +7,15 @@ import time
 
 from neopixel import *
 
-
 # LED strip configuration:
-LED_COUNT      = 16      # Number of LED pixels.
+LED_COUNT      = 144
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
-LED_BRIGHTNESS = 255     # Set to 0 for darkest and 255 for brightest
+LED_BRIGHTNESS = 64     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 
+# TO-DO - Add console menu to switch modes, enum for colors
 
 # Define functions which animate LEDs in various ways.
 def colorWipe(strip, color, wait_ms=50):
@@ -74,6 +74,13 @@ def theaterChaseRainbow(strip, wait_ms=50):
 			for i in range(0, strip.numPixels(), 3):
 				strip.setPixelColor(i+q, 0)
 
+def CylonChase(strip, cycle_ms=500):
+	"""
+	Sweep red pulse left/right just like the Cylons from BSG
+	cycle_ms: time (ms) for one sweep cycle
+	To-Do: add color input, add rainbow sweep
+	"""
+	pass
 
 # Main program logic follows:
 if __name__ == '__main__':
@@ -88,11 +95,14 @@ if __name__ == '__main__':
 		colorWipe(strip, Color(255, 0, 0))  # Red wipe
 		colorWipe(strip, Color(0, 255, 0))  # Blue wipe
 		colorWipe(strip, Color(0, 0, 255))  # Green wipe
+		
 		# Theater chase animations.
 		theaterChase(strip, Color(127, 127, 127))  # White theater chase
 		theaterChase(strip, Color(127,   0,   0))  # Red theater chase
 		theaterChase(strip, Color(  0,   0, 127))  # Blue theater chase
+		
 		# Rainbow animations.
 		rainbow(strip)
 		rainbowCycle(strip)
 		theaterChaseRainbow(strip)
+		colorWipe(strip, Color(0, 0, 0))
