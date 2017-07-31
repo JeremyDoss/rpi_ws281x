@@ -5,6 +5,16 @@
 # Retains colorWipe and rainbowCycle animations and adds a sweeping 
 # Cylon/Nightrider eye animation for running on a strip of NeoPixels.
 
+######## TODO ########
+# Refactor and pull out repetitive code from cylonSweep function
+# Normalize cycle_ms parameters to represent time to complete entire cycle (L<=>R)
+# Render eye position based on system clock and not CPU clock
+# Thread library and run as daemon in background
+# Make rainbow cylon sweep pattern with static colors
+# Make rainbow cylon sweep pattern with shifting colors
+# Add bluetooth connectivity and control LEDs (for control once mounted in the car)
+######################
+
 import time
 import math
 
@@ -43,7 +53,7 @@ def rainbowCycle(strip, wait_ms=1, iterations=5):
 		for i in range(strip.numPixels()):
 			strip.setPixelColor(i, wheel(((i * 256 / strip.numPixels()) + j) & 255))
 		strip.show()
-		time.sleep(wait_ms/100000.0)
+		time.sleep(wait_ms/10000.0)
 
 def renderCylonEye(strip, position, spread):
 	ledCount = strip.numPixels()
@@ -99,14 +109,14 @@ def cylonSweep(strip, cycle_ms=1, iterations=10, spread=2):
 				slow = 0
 				slowFactor = cycle_ms
 
-# Main program logic follows:
 if __name__ == '__main__':
 	# Create NeoPixel object with appropriate configuration.
 	strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
+	
 	# Intialize the library (must be called once before other functions).
 	strip.begin()
 
 	print 'Press Ctrl-C to quit.'
 	while True:
 		cylonSweep(strip, 1, 8, 32)
-		colorWipe(strip, Color(0, 0, 0), 1) # Turn off strand for 5s
+		colorWipe(strip, Color(0, 0, 0), 1)
